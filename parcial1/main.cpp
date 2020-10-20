@@ -9,6 +9,7 @@ float coordy(float yo, float vo, float t, float angulo);
 void disparosOfensivos(float d, float yo, float yod);
 void mostrarInforme(float t, float angulo, float rapidezInicial, float xofensivo, float yofensivo);
 void disparosDefensivos(float d, float yo, float yod);
+void respuestaDefensiva(float yenemigo, float ydefensa, float d, float anguloEnemigo, float rapidezInicial);
 
 int main()
 {
@@ -21,9 +22,74 @@ int main()
     */
 
     disparosDefensivos(100, 35, 71.73); //Distancia horizontal, altura enemigo, altura nuestra
+
+    /* Generar tres disparos que dañen al disparo enemigo sin importar si daño o no su cañon
+     * pero protejo el mio
+    */
     return 0;
 }
 
+/*
+void respuestaDefensiva(float yenemigo, float ydefensa, float d, float anguloEnemigo, float rapidezInicial){
+    float rapidezInicialDefensa = 10;
+    float posinstantenemigox = 0;
+    float posinstantenemigoy = 0;
+    bool encontrado = false;
+    short int tmax = -1;
+    float anguloDefensivo = 1;
+    float xddefensivo = 0;
+    float yddefensivo = 0;
+    float distanciaBalasInstantantea;
+    float distanciaBalaDefensivaCanhonDefensivo;
+    while(!encontrado){
+        for(int t=3; t<100; t++){
+            //Supondre que el minimo tiempo minimo que le toma al disparo enemigo
+            //llegar a nosotros es 3 segundos y el maximo es 200s o 3.3 minutos
+            //
+            posinstantenemigox = coordx(0, rapidezInicial, t, anguloEnemigo);
+            posinstantenemigoy = coordy(yenemigo, rapidezInicial, t, anguloEnemigo);
+            if(distanciaEuclidiana(posinstantenemigox, d, posinstantenemigoy, ydefensa) <= 0.05*d){
+                //Si la distancia del disparo ofensivo respecto a nuestro cañon
+                //es menor o igual a 0.05*d (rango de accion de la bala)
+                //ese disparo representa un problema
+                tmax = t-2; //El tiempo maximo que tiene el canon defensivo para responder
+                encontrado = !encontrado;
+                break;
+            }
+      }
+   }
+
+   int i=0;
+
+   while(i<3){
+        //Mientras no se haya interceptado la bala enemiga
+       for(float t=0.1; t<= tmax; t += 0.1){
+
+           posinstantenemigox = coordx(0, rapidezInicial, t+2, anguloEnemigo);
+           posinstantenemigoy = coordy(yenemigo, rapidezInicial, t+2, anguloEnemigo);
+           xddefensivo =coordx(d, -rapidezInicialDefensa, t, anguloDefensivo);
+           yddefensivo = coordy(ydefensa, rapidezInicialDefensa, t, anguloDefensivo);
+
+           distanciaBalasInstantantea = distanciaEuclidiana(xddefensivo, posinstantenemigox, posinstantenemigoy, yddefensivo);
+           distanciaBalaDefensivaCanhonDefensivo = distanciaEuclidiana(xddefensivo, d, ydefensa, yddefensivo);
+
+           if((distanciaBalasInstantantea <= 0.025*d)&& (distanciaBalaDefensivaCanhonDefensivo <= 0.025*d)){
+               cout << "Elemento interceptado" << endl;
+               i++;
+               break;
+           }
+       }
+
+       if(anguloDefensivo <= 90){
+           anguloDefensivo += 0.000001;
+           rapidezInicialDefensa += 0.000001;
+       }else{
+           anguloDefensivo = 1;
+           rapidezInicialDefensa = 5;
+       }
+   }
+}
+*/
 
 void disparosDefensivos(float d, float yo, float yod){
     float anguloDefensivo = 45; //Para la simulacion iniciare con el angulo que da mas alcance horizontal
@@ -47,7 +113,7 @@ void disparosDefensivos(float d, float yo, float yod){
                 break;
             }
         }
-        if(anguloDefensivo < 90){
+        if(anguloDefensivo <= 90){
             anguloDefensivo += 1;
         }else{
             anguloDefensivo = 45;
@@ -57,7 +123,7 @@ void disparosDefensivos(float d, float yo, float yod){
 }
 
 void disparosOfensivos(float d, float yo, float yod){
-    float anguloEnemigo = 45; //Para la simulacion iniciare con el angulo que da mas alcance horizontal
+    float anguloEnemigo = 0; //Para la simulacion iniciare con el angulo que da mas alcance horizontal
     float rapidezInicial = 35.4;
     short int contDisparosCorrectos = 0;
     float xdofensivo = 0;
@@ -80,7 +146,7 @@ void disparosOfensivos(float d, float yo, float yod){
                 break;
             }
       }
-        if(anguloEnemigo < 90){
+        if(anguloEnemigo <= 90){
             anguloEnemigo += 2;
         }else{
             anguloEnemigo = 45;

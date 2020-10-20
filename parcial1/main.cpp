@@ -12,27 +12,48 @@ void disparosDefensivos(float d, float yo, float yod);
 
 int main()
 {
-    float d; //Supondre esta distancia siempre constante para cada ejecucion
-    float alturaenemigo; //Supondre esta altura siempre constante para cada ejecucion
-    float alturaNuestra;
-
-    //Obtener datos iniciales del espia
-    cout << "Distancia horizontal a la que esta el enemigo de nosotros: " << endl;
-    cin >> d;
-    cout << "Altura respecto al suelo del canhon enemigo" << endl;
-    cin >> alturaenemigo;
-    cout << "Altura respecto al suelo de nuestro canhon" << endl;
-    cin >> alturaNuestra;
-
     //Generar al menos tres disparos que comprometan la integridad del cañon defensivo
-    disparosOfensivos(d, alturaenemigo, alturaNuestra);
+    disparosOfensivos(100, 50, 71.73); //Distancia horizontal, altura enemigo, altura nuestra
 
     /*Generar al menos tres disparos defensivos que compromentan la integridad del cañon ofensivo
      * Seran aquellos enviados por el cañon defensivo que terminen a una distancia de no más de 0.025d
      * del cañon enemigo
     */
-    disparosDefensivos(d, alturaenemigo, alturaNuestra);
+
+    disparosDefensivos(100, 35, 71.73); //Distancia horizontal, altura enemigo, altura nuestra
     return 0;
+}
+
+
+void disparosDefensivos(float d, float yo, float yod){
+    float anguloDefensivo = 45; //Para la simulacion iniciare con el angulo que da mas alcance horizontal
+    float rapidezInicial = 30.57; //Rapidez inicial para la simulacion
+    short int contDisparosCorrectos = 0;
+    float xddefensivo = 0;
+    float yddefensivo = 0;
+    cout << "\n\nDisparo defensivo que danha el canhon ofensivo" << endl;
+    //Generare 3 disparos al cañon ofensivo que lo dañen
+    while(contDisparosCorrectos < 3){
+        for(int t=3; t<100; t++){
+            xddefensivo =coordx(d, -rapidezInicial, t, anguloDefensivo);
+            yddefensivo = coordy(yod, rapidezInicial, t, anguloDefensivo);
+            if(distanciaEuclidiana(xddefensivo, 0, yddefensivo, yo) <= 0.025*d){
+                /*Si la distancia del disparo defensivo respecto al cañon enemigo
+                 * es menor o igual a 0.025*d (rango de accion de la bala) en algun momento
+                 * ese disparo representa un problema para ellos
+                */
+                contDisparosCorrectos += 1;
+                mostrarInforme(t, anguloDefensivo, rapidezInicial, xddefensivo, yddefensivo);
+                break;
+            }
+        }
+        if(anguloDefensivo < 90){
+            anguloDefensivo += 1;
+        }else{
+            anguloDefensivo = 45;
+            rapidezInicial += 1;
+        }
+    }
 }
 
 void disparosOfensivos(float d, float yo, float yod){
@@ -41,6 +62,7 @@ void disparosOfensivos(float d, float yo, float yod){
     short int contDisparosCorrectos = 0;
     float xdofensivo = 0;
     float ydofensivo = 0;
+    cout << "Disparo ofensivo que danha el canhon defensivo" << endl;
     while(contDisparosCorrectos < 3){ //Simulare 3 disparos ofensivos validos
         for(int t=3; t<100; t++){
             /*Supondre que el minimo tiempo minimo que le toma al disparo enemigo
@@ -54,7 +76,6 @@ void disparosOfensivos(float d, float yo, float yod){
                  * ese disparo representa un problema
                 */
                 contDisparosCorrectos += 1;
-                cout << contDisparosCorrectos << endl;
                 mostrarInforme(t, anguloEnemigo, rapidezInicial, xdofensivo, ydofensivo);
                 break;
             }
@@ -62,14 +83,14 @@ void disparosOfensivos(float d, float yo, float yod){
         if(anguloEnemigo < 90){
             anguloEnemigo += 2;
         }else{
-            anguloEnemigo += 45;
+            anguloEnemigo = 45;
             rapidezInicial += 3;
         }
     }
 }
 
 void mostrarInforme(float t, float angulo, float rapidezInicial, float xofensivo, float yofensivo){
-    cout << "El disparo ofensivo peligroso estara en la posicion \n"
+    cout << "El disparo estara en la posicion \n"
          <<"(" << xofensivo<<","<<yofensivo << ")\n"
         << " Tiempo de llegada al punto respecto al sistema defensivo: " << t-2 << " segundos\n"
         << " Angulo de lanzamiento: " << angulo
